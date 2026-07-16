@@ -1,0 +1,90 @@
+#!/bin/sh
+
+raw_path_prefix=$(printf '%s' "${PATH_PREFIX:-}" |
+  sed -E 's#^[[:space:]]+|[[:space:]]+$##g; s#^/+##; s#/+$##')
+
+case "$raw_path_prefix" in
+  '')
+    PATH_PREFIX=''
+    PATH_PREFIX_RULE=''
+    ;;
+  *[!A-Za-z0-9_/-]* | *'//'*)
+    echo "Invalid PATH_PREFIX: ${PATH_PREFIX:-}" >&2
+    exit 1
+    ;;
+  api | assets | healthcheck)
+    echo "PATH_PREFIX is reserved by the service runtime: /$raw_path_prefix" >&2
+    exit 1
+    ;;
+  *)
+    PATH_PREFIX="/$raw_path_prefix"
+    PATH_PREFIX_RULE=$(printf \
+      'location = %s { absolute_redirect off; return 308 %s/; }\n    location ^~ %s/ { rewrite ^%s/(.*)$ /$1 last; }' \
+      "$PATH_PREFIX" "$PATH_PREFIX" "$PATH_PREFIX" "$PATH_PREFIX")
+    ;;
+esac
+
+dns_resolver=${DNS_RESOLVER:-$(awk '$1 == "nameserver" { print $2; exit }' /etc/resolv.conf)}
+
+case "$dns_resolver" in
+  '' | *[!A-Fa-f0-9:.]*)
+    echo "Unable to determine a valid DNS resolver" >&2
+    exit 1
+    ;;
+esac
+
+DNS_RESOLVER=$dns_resolver
+
+backend_url=${BACKEND_URL:-http://127.0.0.1:65535}
+backend_url=${backend_url%/}
+
+case "$backend_url" in
+  http://* | https://*) ;;
+  *)
+    echo "BACKEND_URL must be an http or https origin" >&2
+    exit 1
+    ;;
+esac
+
+BACKEND_PROTO=${backend_url%%://*}
+backend_authority=${backend_url#*://}
+
+case "$backend_authority" in
+  '' | */* | *'?'* | *'#'* | *'@'*)
+    echo "BACKEND_URL must not contain credentials, query, fragment, or path" >&2
+    exit 1
+    ;;
+esac
+
+case "$backend_authority" in
+  *:*)
+    BACKEND_HOST=${backend_authority%%:*}
+    BACKEND_PORT=${backend_authority##*:}
+    ;;
+  *)
+    BACKEND_HOST=$backend_authority
+    if [ "$BACKEND_PROTO" = 'https' ]; then
+      BACKEND_PORT=443
+    else
+      BACKEND_PORT=80
+    fi
+    ;;
+esac
+
+case "$BACKEND_HOST" in
+  '' | *[!A-Za-z0-9_.-]*)
+    echo "BACKEND_URL contains an invalid host" >&2
+    exit 1
+    ;;
+esac
+
+case "$BACKEND_PORT" in
+  '' | *[!0-9]*)
+    echo "BACKEND_URL contains an invalid port" >&2
+    exit 1
+    ;;
+esac
+
+export PATH_PREFIX PATH_PREFIX_RULE DNS_RESOLVER BACKEND_PROTO BACKEND_HOST BACKEND_PORT
+
+unset raw_path_prefix dns_resolver backend_url backend_authority

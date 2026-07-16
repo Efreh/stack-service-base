@@ -1,0 +1,24 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="color-scheme" content="light" />
+    <title>${service_name}</title>
+  </head>
+  <body>
+    <main class="page">
+      <header class="page__header">
+        <p class="eyebrow">Frontend service</p>
+        <h1>${service_name}</h1>
+      </header>
+
+      <p class="status" role="status">
+        <span class="status__indicator" aria-hidden="true"></span>
+        Running
+      </p>
+    </main>
+
+    <script type="module" src="/app/main.ts"></script>
+  </body>
+</html>

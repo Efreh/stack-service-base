@@ -1,0 +1,10 @@
+.idea/
+.vscode/
+*.iml
+*.log
+src/.env.local
+src/node_modules/
+src/dist/
+src/coverage/
+src/test-results/
+src/playwright-report/

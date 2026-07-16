@@ -1,0 +1,8 @@
+{
+  "/api": {
+    "targetEnv": "BACKEND_URL",
+    "secure": true,
+    "changeOrigin": true,
+    "ws": true
+  }
+}

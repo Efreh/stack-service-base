@@ -6,12 +6,13 @@ SSBase::CommandLine::COMMANDS[:init] = Class.new do
     parser.on('', '--gitlab-c', 'Gitlab C CI/CD')
     parser.on('', '--gitlab',   'Gitlab CI/CD')
     parser.on('', '--github',   'GitHub CI/CD')
+    parser.on('', '--frontend', 'Vite frontend service')
   end
 
   def run(obj, params, args, _extra)
     if params.empty? || args.empty?
       puts 'Usage:'
-      puts "\tssbase init [option] <service name>"
+      puts "\tssbase init [--frontend] [option] <service name>"
       puts "\tssbase init stack [option]"
       puts 'option: --gitlab-c, --gitlab, --github'
       return
@@ -23,13 +24,14 @@ SSBase::CommandLine::COMMANDS[:init] = Class.new do
       type = :stack
       service_name = 'fake-service-name'
     else
-      type = :project
+      type = params[:frontend] ? :frontend : :project
       service_name = first_arg
     end
 
     copy_folder type, :home
 
-    copy_folder type, 'gitlab-c' if params[:gitlab_c]
+    default_platform = params.values_at(:gitlab_c, :gitlab, :github).none?
+    copy_folder type, 'gitlab-c' if params[:gitlab_c] || default_platform
     copy_folder type, 'gitlab' if params[:gitlab]
     copy_folder type, 'github' if params[:github]
 

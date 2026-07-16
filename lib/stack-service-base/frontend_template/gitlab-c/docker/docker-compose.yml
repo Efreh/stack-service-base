@@ -1,0 +1,15 @@
+services:
+  ${service_name}:
+    image: ${REGISTRY_HOST}/${service_name}/${CI_COMMIT_BRANCH}
+    build:
+      context: ../src
+      additional_contexts:
+        docker: ../docker
+      dockerfile: ../docker/frontend/Dockerfile
+    ports:
+      - "7000:8080"
+    environment:
+      API_BASE_URL: ${API_BASE_URL:-}
+      BACKEND_URL: ${BACKEND_URL:-http://127.0.0.1:65535}
+      LOG_LEVEL: ${LOG_LEVEL:-info}
+      PATH_PREFIX: ${PATH_PREFIX:-}

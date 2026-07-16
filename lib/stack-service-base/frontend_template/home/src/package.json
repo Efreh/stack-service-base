@@ -1,0 +1,30 @@
+{
+  "name": "${service_name}",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "engines": {
+    "node": "^24.18.0"
+  },
+  "scripts": {
+    "start": "vite --host 0.0.0.0",
+    "build": "vite build",
+    "build:preview": "vite build --mode preview",
+    "preview": "npm run build:preview && vite preview --host 0.0.0.0 --mode preview",
+    "typecheck": "tsc --noEmit",
+    "lint": "eslint .",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "check": "npm run typecheck && npm run lint && npm run test && npm run build"
+  },
+  "devDependencies": {
+    "@eslint/js": "9.39.4",
+    "@types/node": "24.13.3",
+    "eslint": "9.39.4",
+    "globals": "15.15.0",
+    "typescript": "5.9.3",
+    "typescript-eslint": "8.59.3",
+    "vite": "8.1.5",
+    "vitest": "4.1.10"
+  }
+}
