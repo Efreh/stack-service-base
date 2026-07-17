@@ -1,5 +1,12 @@
 .idea/
 .vscode/
+.qodo
+.idea
+.codex
+.agents
+*/spec/results
+.env.local
+*/.env.*
 *.iml
 *.log
 src/.env.local
