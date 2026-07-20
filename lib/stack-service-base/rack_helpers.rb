@@ -203,7 +203,7 @@ module RackHelpers
         headers.merge!(
           # 'Access-Control-Allow-Origin' => "#{referer.scheme}://#{referer.host}",
           'Access-Control-Allow-Origin' => origin,
-          'Vary' => 'Orign',
+          'Vary' => 'Origin',
           'Access-Control-Allow-Methods' => 'GET, PUT, POST, PATCH, DELETE, HEAD, OPTIONS',
           'Access-Control-Allow-Headers' => '*',
           'Access-Control-Expose-Headers' => '*', # 'mcp-session-id'
