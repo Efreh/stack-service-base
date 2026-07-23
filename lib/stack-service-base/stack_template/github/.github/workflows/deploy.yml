@@ -47,4 +47,4 @@ jobs:
             deploy_target="${DEPLOY_USER:-root}@${deploy_target}"
           fi
 
-          dry-stack swarm_deploy -x "ssh://${deploy_target}" -- --prune --resolve-image=always < ruby-mitm-proxy.drs
+          dry-stack swarm_deploy -x "ssh://${deploy_target}" -- --prune --resolve-image=always < base.drs
